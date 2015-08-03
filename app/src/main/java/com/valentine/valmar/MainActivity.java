@@ -1,38 +1,60 @@
 package com.valentine.valmar;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.app.ActionBarActivity;
+
+import java.util.ArrayList;
+
+import fr.tvbarthel.cheerleader.library.client.CheerleaderClient;
+import fr.tvbarthel.cheerleader.library.client.SoundCloudComment;
+import fr.tvbarthel.cheerleader.library.client.SoundCloudTrack;
+import fr.tvbarthel.cheerleader.library.client.SoundCloudUser;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends ActionBarActivity {
-
+    CheerleaderClient mCheerleaderClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+        mCheerleaderClient = new CheerleaderClient.Builder()
+                .from(this)
+                .with("c9c5b7a0e880b985fddc4d3d42e75ac4")
+                .supports("Sage Chemutai")
+                .build();
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    mCheerleaderClient.getArtistProfile()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<SoundCloudUser>() {
+        @Override
+        public void call(SoundCloudUser soundCloudUser) {
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
         }
+    });
 
-        return super.onOptionsItemSelected(item);
-    }
+        mCheerleaderClient.getArtistTracks()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ArrayList<SoundCloudTrack>>() {
+                    @Override
+                    public void call(ArrayList<SoundCloudTrack> soundCloudTracks) {
+
+                    }
+                });
+
+        mCheerleaderClient.getTrackComments( track)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ArrayList<SoundCloudComment>>() {
+                    @Override
+                    public void call(ArrayList<SoundCloudComment> soundCloudComments) {
+
+                    }
+                });
+            }
 }
